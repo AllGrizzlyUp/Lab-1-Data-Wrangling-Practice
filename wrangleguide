@@ -1,0 +1,23 @@
+#Importing and wrangling data from the National Historic GIS into R, and import all libraries necessary for the assignment
+library(sf)
+library(dplyr)
+library(RPostgreSQL)
+library(postGIStools)
+
+#Identifies the driver for R to connect with
+driver <- dbDriver(“PostgreSQL”) 
+
+#Makes the connection between the driver and R
+connection <- dbConnect(drv, user = “starfax”,
+password = #, 
+dbname = "gis2",
+port = 5432,
+host = "localhost")
+
+#Import the Data from the Postgresql Database
+tractsdemo <- "SELECT * FROM tractsdemo"
+tractsgeom <- “SELECT * FROM tractsgeom”
+tractsgeom.sp <- get_postgis_query(con, tractsgeom, geom_name="geom")
+
+#Join the two datasets together
+tracts <- join(tractsdemo, tractsgeom, by “GISJOIN”, join = “inner” ,match = “first”)
